@@ -36,10 +36,10 @@ mr_trash = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "Mr. Trash Wheel")[
    mutate(sports_balls = round(sports_balls))
 ``` 
 
-Now I am reading and cleaning precipitation data for 2018 and 2019. I will omit rows without precipitation data and add a variable for year before combining the precipitation data sets and converting month to a character variable.
+Now I am reading and cleaning precipitation data for 2018 and 2019. I will omit rows without precipitation data and add a variable for year before combining the precipitation data sets and (trying to) convert month to a character variable (it already is one, maybe that's part of why it didn't work for me no matter what I tried).
 
 ```{r precip}
-precip2018 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2018 Precipitation")[-c(14),]  
+precip2018 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2018 Precipitation")[-c(14),]
 precip2018 = mutate(precip2018, 
        year = 2018) %>% janitor::clean_names()
 
@@ -63,15 +63,26 @@ Key variables in Mr Trash Wheel include weight in tons, volume in cubic years, h
 
 `summary(precipboth)` This data set is the worst because I'm so bad at R and couldn't do anything except put the data together and remove two rows! Yay. The variables should be year, precipitation in inches, and months. Total precipitation in 2018 was `print median precip2018$x2` 70.33 in. 
 
-
-```{r mr_t}
-
-
-
-```
-
 ## Problem 2
 
-```{r pressure}
+I'm importing the data because the deadline is fast approaching and I've been crying hysterically for seven hours so this is the best I can do :')
+
+```{r fivtheight}
+
+pols_month = read_csv("./hw2_data/pols-month.csv") 
+  
+unempl = read_csv("./hw2_data/unemployment.csv") 
+
+snp = read_csv("./hw2_data/snp.csv") 
 
 ```
+
+## Problem 3 
+
+
+```{r baby_names}
+
+baby_names = read_csv("./hw2_data/Popular_Baby_Names.csv") 
+
+```
+
