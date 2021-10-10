@@ -6,26 +6,66 @@ output:
   github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Setup 
+
+First, I am loading relevant packages. 
+
+```{r setup}
+library(tidyverse)
+library(readxl)
+library(dplyr)
 ```
 
 ## Problem 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+I placed the Mr. Trash Wheel data set into a subdirectory named hw2_data within this one, p8105_hw2_lcp2148. I renamed it trash_wheel.xlsx for ease of use. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Next, I am reading in the Excel file and cleaning by: 
 
-```{r cars}
-summary(cars)
+- specifying the sheet in the Excel file 
+- omitting non-data entries (rows with notes / figures; columns containing notes) 
+- omitting rows that do not include dumpster-specific data
+- converting variable names to snake case
+- rounding the number of sports balls to the nearest integer
+the row numbers are all off because it used the first column instead of excel columns
+
+```{r mr_trash}
+mr_trash = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "Mr. Trash Wheel")[-c(1, 11,21,29,35,39,45,50,54,58,60,64,73,80,102,109,116,122,126,128,137,139,146,152,158,162,169,178,184,188,191,195,200,202,205,210,229,238,242,248,257,260,263,266,269,279,282,300,312,323,337,343,352,356,366,371,377,384,391,403,407,420,428,437,445,448,458,460,464,473,477,490,498,508,513,517,532,534,535),-c(15:17)]  %>%
+  janitor::clean_names() %>% 
+   mutate(sports_balls = round(sports_balls))
+``` 
+
+Now I am reading and cleaning precipitation data for 2018 and 2019. I will omit rows without precipitation data and add a variable for year before combining the precipitation data sets and converting month to a character variable.
+
+```{r precip}
+precip2018 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2018 Precipitation")[-c(14),]  
+precip2018 = mutate(precip2018, 
+       year = 2018) %>% janitor::clean_names()
+
+precip2019 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2019 Precipitation")[-c(14),] 
+precip2019 = mutate(precip2019, 
+       year = 2019) %>% janitor::clean_names()
+
+precipboth = bind_rows(precip2018, precip2019)[-c(1,14),]
+
+rename(precipboth, month = precipitation_in, inches_precip = x2)
+
+month.name
+
+``` 
+
+Write a paragraph about these data; you are encouraged to use inline R. 
+`summmary(precipboth)`Be sure to note the number of observations in both resulting datasets, and give examples of key variables. For available data, what was the total precipitation in 2018 70.33 in? What was the median number of sports balls in a dumpster in 2019?
+
+
+```{r mr_t}
+
+
+
 ```
 
-## Including Plots
+## Problem 2
 
-You can also embed plots, for example:
+```{r pressure}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
