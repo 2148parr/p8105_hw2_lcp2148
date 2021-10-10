@@ -49,9 +49,7 @@ precip2019 = mutate(precip2019,
 
 precipboth = bind_rows(precip2018, precip2019)[-c(1,14),]
 
-rename(precipboth, month = precipitation_in, inches_precip = x2)
-##rename doesn't appear to work in env, probably not even supposed to 
-##do it this way, sorry
+plyr::rename(precipboth, c("month" = "precipitation_in" , "inches_precip" = "x2"))
 
 precipboth$precipitation_in 
 month.name
