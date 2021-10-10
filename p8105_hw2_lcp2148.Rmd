@@ -106,7 +106,7 @@ Finally, for male, white non-hispanic children born in 2016, produce a scatter p
 
 ```{r baby_names}
 
-baby_names = read_csv("./hw2_data/Popular_Baby_Names.csv") 
+baby_names = read_csv("./hw2_data/Popular_Baby_Names.csv") %>% janitor::clean_names()
 
 ```
 
