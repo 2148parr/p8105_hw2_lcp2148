@@ -27,14 +27,14 @@ Next, I am reading in the Excel file and cleaning by:
 - omitting rows that do not include dumpster-specific data
 - converting variable names to snake case
 - rounding the number of sports balls to the nearest integer
+[-c(1, 11,21,29,35,39,45,50,54,58,60,64,73,80,102,109,116,122,126,128,137,139,146,152,158,162,169,178,184,188,191,195,200,202,205,210,229,238,242,248,257,260,263,266,269,279,282,300,312,323,337,343,352,356,366,371,377,384,391,403,407,420,428,437,445,448,458,460,464,473,477,490,498,508,513,517,532,534,535),-c(15:17)]
 
 Note: the row numbers are all off because it used the first column instead of excel columns, I do not have the time or mental strength to fix this and also attempt the rest of the questions.
-
+drop na
 ```{r mr_trash}
-mr_trash = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "Mr. Trash Wheel")[-c(1, 11,21,29,35,39,45,50,54,58,60,64,73,80,102,109,116,122,126,128,137,139,146,152,158,162,169,178,184,188,191,195,200,202,205,210,229,238,242,248,257,260,263,266,269,279,282,300,312,323,337,343,352,356,366,371,377,384,391,403,407,420,428,437,445,448,458,460,464,473,477,490,498,508,513,517,532,534,535),-c(15:17)]  %>%
+mr_trash = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "Mr. Trash Wheel", cellranger::cell_cols(1:14)) %>% drop_na() %>%
   janitor::clean_names() %>% 
    mutate(sports_balls = round(sports_balls))
-
 ``` 
 
 Now I am reading and cleaning precipitation data for 2018 and 2019. I will omit rows without precipitation data and add a variable for year before combining the precipitation data sets and (trying to) convert month to a character variable (it already is one, maybe that's part of why it didn't work for me no matter what I tried).
@@ -58,7 +58,7 @@ month.name
 ``` 
 
 The data look terrible because I wasn't able to clean any of the data sets properly. 
-Key variables in Mr Trash Wheel include weight in tons, volume in cubic years, homes powers, and number of trash items collected such as plastic bottles, cigarette butts, and grocery bags (and of course, sports balls). `summary(mr_trash)` The median weight was 3.380 tons, and the mean was 9.037 tons. `print(mr_trash)` The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `if (mr_trash$year <- 2019) {print median(pull(mr_trash, sports_balls))}` 
+Key variables in Mr Trash Wheel include weight in tons, volume in cubic years, homes powers, and number of trash items collected such as plastic bottles, cigarette butts, and grocery bags (and of course, sports balls). `summary(mr_trash)` The median weight was 3.380 tons, and the mean was 9.037 tons. `print(mr_trash)` The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `if (year == 2019){print median(pull(mr_trash, sports_balls))}` 
 
 `summary(precipboth)` This data set is the worst because I'm so bad at R and couldn't do anything except put the data together and remove two rows! Yay. The variables should be year, precipitation in inches, and months. Total precipitation in 2018 was `print median (pull(precip2018, x2))` 70.33 in. 
 
@@ -102,7 +102,7 @@ Task- data cleaning : names of a categorical predictor and the case structure of
 
 Vaguely remember how to do these parts from lecture but will need to re-watch again... Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time; this should have rows for ethnicities and columns for year. Produce a similar table showing the most popular name among male children over time.
 Finally, for male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis).
-
+filter(baby_names, childs_first_name == "Olivia")
 
 
 ```{r baby_names}
