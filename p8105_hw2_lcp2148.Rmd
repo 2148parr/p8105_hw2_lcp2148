@@ -83,9 +83,7 @@ Write a short paragraph about these datasets. Explain briefly what each dataset 
 
 pols_month = read_csv(file = "./hw2_data/pols-month.csv") 
 
-pols_month = janitor::clean_names(pols_month)  %>%
-  mutate(mon = year, month, day) %>%
-  separate(mon, into = c("year", "month", "day"))
+pols_month = janitor::clean_names(pols_month) 
   
 unempl = read_csv(file = "./hw2_data/unemployment.csv") 
 
