@@ -40,20 +40,20 @@ mr_trash = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "Mr. Trash Wheel", 
 Now I am reading and cleaning precipitation data for 2018 and 2019. I will omit rows without precipitation data and add a variable for year before combining the precipitation data sets and (trying to) convert month to a character variable (it already is one, maybe that's part of why it didn't work for me no matter what I tried).
 
 ```{r precip}
-precip2018 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2018 Precipitation")[-c(14),]
+precip2018 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2018 Precipitation", skip = 1)
 precip2018 = mutate(precip2018, 
        year = 2018) %>% janitor::clean_names()
 
-precip2019 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2019 Precipitation")[-c(14),] 
+precip2019 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2019 Precipitation", skip = 1)
 precip2019 = mutate(precip2019, 
        year = 2019) %>% janitor::clean_names()
 
-precipboth = bind_rows(precip2018, precip2019)[-c(1,14),]
+precipboth = bind_rows(precip2018, precip2019) %>% drop_na()
 
 plyr::rename(precipboth, c("month" = "precipitation_in" , "inches_precip" = "x2"))
 
-precipboth$precipitation_in 
-month.name
+dfmnth <- data.frame(mnth = 1:12, month = month.name[mnth])
+
 
 ``` 
 
