@@ -64,7 +64,7 @@ Key variables in Mr Trash Wheel include weight in tons, volume in cubic years, h
 
 First I am importing pols-month.csv, unemployment.csv, and snp.csv. 
 tasks-- month and year will be keys to merge data sets
-First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+I cleaned the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
@@ -74,6 +74,8 @@ Join the datasets by merging snp into pols, and merging unemployment into the re
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 ##  separate(mon, into = c("year", "month", "day")) %>%
+##          mon, into = c("year", "month", "day"))
+  
 
 ```{r fivtheight}
 
@@ -82,13 +84,12 @@ pols_month = read_csv(file = "./hw2_data/pols-month.csv") %>%
   pivot_longer(
     cols = starts_with("prez_"),
     names_prefix = "prez_",
-    names_to = "president")
-            
-  
-  
- ## mutate( 
-  ##  left_join(pull(pols_month, prez_dem), df_dem, by = 1), 
-  ##  left_join(pull(pols_month, prez_gop), df_gop, by = 1)) 
+    names_to = "president")  %>%
+  mutate(year = lubridate::year(mon), 
+                month = lubridate::month(mon), 
+                day = lubridate::day(mon)) %>% 
+  left_join( dfmnth, by = "month")  %>% 
+  select(-c(day, month))
 
   
 unempl = read_csv(file = "./hw2_data/unemployment.csv") 
