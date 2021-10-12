@@ -159,6 +159,15 @@ baby_names %>%
     values_from = "rank"
   ) 
  
+baby_names %>%  
+  select(childs_first_name, gender, ethnicity, year_of_birth, rank) %>%  
+  filter(gender == "male", rank == 1)  %>%
+  arrange(year_of_birth)  %>%
+  pivot_wider(
+    names_from = "year_of_birth",
+    values_from = "childs_first_name"
+  ) 
+
 
 baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == 2016, gender == "male")  %>% ggplot(aes(rank, count)) + geom_point(size = 0.5) 
 
