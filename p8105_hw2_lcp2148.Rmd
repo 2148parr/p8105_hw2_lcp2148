@@ -120,7 +120,7 @@ Task- data cleaning : names of a categorical predictor??? and the case structure
 
 Vaguely remember how to do these parts from lecture but will need to re-watch again... Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time; this should have rows for ethnicities and columns for year. Produce a similar table showing the most popular name among male children over time.
 Finally, for male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis).
-filter(baby_names, childs_first_name == "Olivia")
+
 
 
 ```{r baby_names}
@@ -131,7 +131,7 @@ baby_names = read_csv(file = "./hw2_data/Popular_Baby_Names.csv")  %>%
 
 baby_names = as.data.frame(sapply(baby_names, tolower))
   
-
+baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == "2016", gender == "male")  %>% ggplot( aes(x = rank, y = count)) + geom_point() + geom_text(aes(label = childs_first_name))
 
 
 
