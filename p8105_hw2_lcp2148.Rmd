@@ -52,8 +52,11 @@ precipboth = bind_rows(precip2018, precip2019) %>% drop_na()
 
 plyr::rename(precipboth, c("month" = "precipitation_in" , "inches_precip" = "x2"))
 
-dfmnth <- data.frame(mnth = 1:12, month = month.name[mnth])
+dfmnth = tibble(
+  month = 1:12, 
+  mnth = c(month.name[month]))
 
+precipfinal = left_join(precipboth, dfmnth, by = "month")
 
 ``` 
 
