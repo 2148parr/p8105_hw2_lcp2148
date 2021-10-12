@@ -96,12 +96,18 @@ unempl = read_csv(file = "./hw2_data/unemployment.csv")
 
 unempl = janitor::clean_names(unempl)
 
-snp = read_csv(file = "./hw2_data/snp.csv", col_types = "dd") %>%
-  janitor::clean_names() %>% 
-  lubridate::mdy(date) %>%
-  mutate( month = lubridate::month(date), 
-                day = lubridate::day(date),
-                year = lubridate::year(date)) %>% 
+snp = read_csv(file = "./hw2_data/snp.csv") %>%
+  janitor::clean_names() 
+
+date_fixed = as.numeric(date)
+
+snp$date = unlist(snp$date)
+snp[order(as.Date.numeric(date,format = "%m/%d/%Y")),,drop = FALSE]
+
+snp = lubridate::mdy(date) %>%
+  mutate( month2 = lubridate::month(date), 
+                day2 = lubridate::day(date),
+                year2 = lubridate::year(date)) %>% 
   left_join( dfmnth, by = "month")  %>% 
   select(-c(day, month))
 
