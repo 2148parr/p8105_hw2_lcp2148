@@ -15,6 +15,7 @@ library(tidyverse)
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(knitr)
 ```
 
 ## Problem 1
@@ -133,13 +134,28 @@ baby_names = read_csv(file = "./hw2_data/Popular_Baby_Names.csv", col_types = "d
 ```
 
 
-Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time; this should have rows for ethnicities and columns for year. Produce a similar table showing the most popular name among male children over time.
+Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time; this should have rows for ethnicities and columns for year. 
+
+Produce a similar table showing the most popular name among male children over time.
+
 Finally, for male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis).
 
 
+    ## %>%
+ ## kable(format = "pipe", col.names = gsub("[_]", " ", names, caption = "Popularity of the name ## Olivia over time")
 
 ```{r baby_figures}
-  
+
+baby_names %>%  
+  select(childs_first_name, gender, ethnicity, year_of_birth, rank) %>%  
+  filter(childs_first_name == "olivia", gender == "female")  %>%
+  arrange(year_of_birth)  %>%
+  pivot_wider(
+    names_from = "year_of_birth",
+    values_from = "rank"
+  ) 
+ 
+
 baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == 2016, gender == "male")  %>% ggplot(aes(rank, count)) + geom_point(size = 0.5) 
 
 ```
