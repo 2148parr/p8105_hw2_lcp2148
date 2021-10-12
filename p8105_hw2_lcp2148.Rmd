@@ -14,6 +14,7 @@ First, I am loading relevant packages.
 library(tidyverse)
 library(readxl)
 library(dplyr)
+library(ggplot2)
 ```
 
 ## Problem 1
@@ -126,12 +127,12 @@ Finally, for male, white non-hispanic children born in 2016, produce a scatter p
 ```{r baby_names}
 
 
-baby_names = read_csv(file = "./hw2_data/Popular_Baby_Names.csv")  %>%
+baby_names = read_csv(file = "./hw2_data/Popular_Baby_Names.csv", col_types = "dcccdd")  %>%
   janitor::clean_names() 
 
 baby_names = as.data.frame(sapply(baby_names, tolower))
   
-baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == "2016", gender == "male")  %>% ggplot( aes(x = rank, y = count)) + geom_point() + geom_text(aes(label = childs_first_name))
+baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == "2016", gender == "male")  %>% ggplot( aes(x = rank, y = count)) + geom_point(size = 0.5) ## + ## scale_x_continuous(breaks = seq(0,max,10))  + scale_y_continuous(breaks=seq(0,max,5))
 
 
 
