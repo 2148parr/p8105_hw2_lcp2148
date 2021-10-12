@@ -73,25 +73,22 @@ Third, tidy the unemployment data so that it can be merged with the previous dat
 Join the datasets by merging snp into pols, and merging unemployment into the result.
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
-
+##  separate(mon, into = c("year", "month", "day")) %>%
 
 ```{r fivtheight}
 
-
 pols_month = read_csv(file = "./hw2_data/pols-month.csv") %>%
   janitor::clean_names() %>% 
-  separate(mon, into = c("year", "month", "day")) %>%
-  mutate( 
-    president = pivot_longer(
-             cols = starts_with("prez_"),
-             names_prefix = "prez_",
-             values_drop_na = TRUE))
+  pivot_longer(
+    cols = starts_with("prez_"),
+    names_prefix = "prez_",
+    names_to = "president")
             
   
   
-  mutate( 
-    left_join(pull(pols_month, prez_dem), df_dem, by = 1), 
-    left_join(pull(pols_month, prez_gop), df_gop, by = 1)) 
+ ## mutate( 
+  ##  left_join(pull(pols_month, prez_dem), df_dem, by = 1), 
+  ##  left_join(pull(pols_month, prez_gop), df_gop, by = 1)) 
 
   
 unempl = read_csv(file = "./hw2_data/unemployment.csv") 
