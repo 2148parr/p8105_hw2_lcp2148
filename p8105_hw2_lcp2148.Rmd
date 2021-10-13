@@ -58,7 +58,7 @@ precipfinal = left_join(precipboth, dfmnth, by = "month") %>%
 
 ``` 
 
-Key variables in Mr Trash Wheel include weight in tons, volume in cubic years, homes powers, and number of trash items collected such as plastic bottles, cigarette butts, and grocery bags (and of course, sports balls). `summary(mr_trash)` The median weight was 3.380 tons, and the mean was 9.037 tons. `print(mr_trash)` The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `if (year == 2019){print median(pull(mr_trash, sports_balls))}` ##use filter for this part
+Key variables in Mr Trash Wheel include `r names(mr_trash)`. The median weight was 3.380 tons, and the mean was 9.037 tons. `print(mr_trash)` The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `if (year == 2019){print median(pull(mr_trash, sports_balls))}` ##use filter for this part
 
 `summary(precipboth)` For the precipitation data set, the variables are year, precipitation in inches, and months. Total precipitation in 2018 was `print median (pull(precip2018, x2))` 70.33 in. 
 
@@ -73,8 +73,6 @@ Second, clean the data in snp.csv using a similar process to the above. For cons
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
 
 Join the datasets by merging snp into pols, and merging unemployment into the result.
-
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
   
 
 ```{r fivtheight}
@@ -118,11 +116,11 @@ merged_538 =
 
 ```
 
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
 ## Problem 3 
 
-Next, I'm importing the baby names data. 
-Task- data cleaning : names of a categorical predictor??? and the case structure of string variables (child's first name) changed over time; some rows seem duplicated, and these will need to be removed (hint: google something like “dplyr remove duplicate rows” to get started 
-
+Next, I'm importing the baby names data and cleaning by correcting ethnicity names typos to match, making the case structure of the name variable consisten, and removing the duplicate rows. 
 
 ```{r baby_names}
 
@@ -139,18 +137,14 @@ baby_names$ethnicity[baby_names$ethnicity == "white non hisp"] = "white non hisp
   
 ```
 
+Next, I make a table using `pivot_wider` showing the rank in popularity of the name “Olivia” as a female baby name over time including rows for ethnicities and columns for year. 
 
-Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time; this should have rows for ethnicities and columns for year. 
+I then made a table using a similar process showing the most popular name among male children over time.
 
-Produce a similar table showing the most popular name among male children over time.
-
-Finally, for male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis).
-
-
-    ## %>%
-
-##  knitr::kable(format = "pipe", col.names = gsub("[_]", " ", names, caption = "Popularity of  ##the name Olivia over time")
- ##
+For male, white non-hispanic children born in 2016, I used `ggplot` to make a scatter plot showing the number of children with a name against the rank in popularity of that name.
+## %>%
+##knitr::kable(format = "pipe", col.names = gsub("[_]", " ", names, caption = "Popularity of  ##the name Olivia over time")
+ 
 
 ```{r baby_figures}
 
@@ -163,7 +157,6 @@ baby_names %>%
     values_from = "rank"
   ) 
 
- 
 baby_names %>%  
   select(childs_first_name, gender, ethnicity, year_of_birth, rank) %>%  
   filter(gender == "male", rank == 1)  %>%
@@ -173,7 +166,6 @@ baby_names %>%
     values_from = "childs_first_name"
   ) 
 
-
-baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == 2016, gender == "male")  %>% ggplot(aes(rank, count)) + geom_point(size = 0.5) 
+baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == 2016, gender == "male")  %>% ggplot(aes(rank, count)) + geom_point(size = 0.5) + ggtitle("Number and rank of names among white male children born in 2016")
 
 ```
