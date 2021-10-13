@@ -22,25 +22,34 @@ library(knitr)
 
 ## Problem 1
 
-I placed the Mr. Trash Wheel data set into a subdirectory named hw2_data within this one, p8105_hw2_lcp2148. I renamed it `trash_wheel.xlsx` for ease of use. 
+I placed the Mr. Trash Wheel data set into a subdirectory named hw2_data
+within this one, p8105_hw2_lcp2148. I renamed it `trash_wheel.xlsx` for 
+ease of use. 
 
 Next, I am reading in the Excel file and cleaning by: 
 
 - specifying the sheet in the Excel file 
-- omitting non-data entries (rows with notes / figures; columns containing notes) 
+- omitting non-data entries (rows with notes / figures; columns containing
+notes) 
 - omitting rows that do not include dumpster-specific data
 - converting variable names to snake case
 - rounding the number of sports balls to the nearest integer
 
 ```{r mr_trash}
+
 mr_trash = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "Mr. Trash Wheel", cellranger::cell_cols(1:14)) %>% drop_na() %>%
   janitor::clean_names() %>% 
    mutate(sports_balls = round(sports_balls))
+
 ``` 
 
-Now I am reading and cleaning precipitation data for 2018 and 2019. I will omit rows without precipitation data and add a variable for year before combining the precipitation data sets and (trying to) convert month to a character variable (it already is one, maybe that's part of why it didn't work for me no matter what I tried).
+Now I am reading and cleaning precipitation data for 2018 and 2019. I will
+omit rows without precipitation data and add a variable for year before
+combining the precipitation data sets and converting month to a
+character variable.
 
 ```{r precip}
+
 precip2018 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2018 Precipitation", skip = 1)
 precip2018 = mutate(precip2018, 
        year = 2018) %>% janitor::clean_names()
@@ -61,9 +70,9 @@ precipfinal = left_join(precipboth, dfmnth, by = "month") %>%
 
 ``` 
 
-Key variables in Mr Trash Wheel include `r names(mr_trash)`. `print(mr_trash)` The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `r mr_trash %>% filter(year == "2019") %>% median(sports_balls)` 
+Key variables in Mr Trash Wheel include `r names(mr_trash)`.  The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `r mr_trash %>% filter(year == 2019) %>% pull(sports_balls) %>% median()`.
 
-For the precipitation data set, the variables are `r names(precipfinal)`. Total precipitation in 2018 was `r precipfinal %>% filter(year == "2018") %>% sum(precip_in)` in. 
+For the precipitation data set, the variables are `r names(precipfinal)`. Total precipitation in 2018 was `r precipfinal %>% filter(year == 2018) %>% pull(precip_in) %>% sum()` in. 
 
 ## Problem 2
 
@@ -120,7 +129,7 @@ merged_538 =
 
 ```
 
-The `pols_month` data set contains data on the party affiliation of the current president and number of republican and democratic governors, senators, and senators on specific dates, which were changed to indicate year and month. The dimension of the merged data set, `merged_538`, is `r dim(merged_538)`. The range of years in this merged data set is `r merged_538 %>% select(year) %>% range`. The names of key variables are month and year, out of the total variables in the data set, `r merged_538 %>% names`. 
+The `pols_month` data set contains data on the party affiliation of the current president and number of republican and democratic governors, senators, and senators on specific dates, which were changed to indicate year and month. The representative of the merged data set, `merged_538`, is `r dim(merged_538)`. The range of years in this merged data set is `r merged_538 %>% select(year) %>% range`. The names of key variables are month and year, out of the total variables in the data set, `r merged_538 %>% names`. 
 
 ## Problem 3 
 
@@ -141,11 +150,16 @@ baby_names$ethnicity[baby_names$ethnicity == "white non hisp"] = "white non hisp
   
 ```
 
-Next, I make a table using `pivot_wider` showing the rank in popularity of the name “Olivia” as a female baby name over time including rows for ethnicities and columns for year. 
+Next, I make a table using `pivot_wider` showing the rank in popularity of the 
+name “Olivia” as a female baby name over time including rows for ethnicities 
+and columns for year. 
 
-I then made a table using a similar process showing the most popular name among male children over time.
+I then make a table using a similar process showing the most popular name among 
+male children over time.
 
-For male, white non-hispanic children born in 2016, I used `ggplot` to make a scatter plot showing the number of children with a name against the rank in popularity of that name.
+For male, white non-hispanic children born in 2016, I use `ggplot` to make a 
+scatter plot showing the number of children with a name against the rank in 
+popularity of that name.
 ## %>%
 ##knitr::kable(format = "pipe", col.names = gsub("[_]", " ", names, caption = "Popularity of  ##the name Olivia over time")
  
@@ -170,6 +184,7 @@ baby_names %>%
     values_from = "childs_first_name"
   ) 
 
-baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == 2016, gender == "male")  %>% ggplot(aes(rank, count)) + geom_point(size = 0.5) + ggtitle("Number and rank of names among white male children born in 2016")
+baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == 2016, 
+                      gender == "male")  %>% ggplot(aes(rank, count)) + geom_point(size = 0.5) + ggtitle("Number and rank of names among white male children born in 2016")
 
 ```
