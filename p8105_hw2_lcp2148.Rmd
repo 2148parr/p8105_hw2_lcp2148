@@ -11,11 +11,13 @@ output:
 First, I am loading relevant packages. 
 
 ```{r setup}
+
 library(tidyverse)
 library(readxl)
 library(dplyr)
 library(ggplot2)
 library(knitr)
+
 ```
 
 ## Problem 1
@@ -55,13 +57,13 @@ dfmnth = tibble(
 
 precipfinal = left_join(precipboth, dfmnth, by = "month") %>% 
   select(-c(month)) %>% 
-  rename(month = mnth)
+  rename(month = mnth, precip_in = total)
 
 ``` 
 
-Key variables in Mr Trash Wheel include `r names(mr_trash)`. The median weight was 3.380 tons, and the mean was 9.037 tons. `print(mr_trash)` The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `if (year == 2019){print median(pull(mr_trash, sports_balls))}` ##use filter for this part
+Key variables in Mr Trash Wheel include `r names(mr_trash)`. `print(mr_trash)` The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `r mr_trash %>% filter(year == "2019") %>% median(sports_balls)` 
 
-`summary(precipboth)` For the precipitation data set, the variables are year, precipitation in inches, and months. Total precipitation in 2018 was `print median (pull(precip2018, x2))` 70.33 in. 
+For the precipitation data set, the variables are `r names(precipfinal)`. Total precipitation in 2018 was `r precipfinal %>% filter(year == "2018") %>% sum(precip_in)` in. 
 
 ## Problem 2
 
@@ -118,7 +120,7 @@ merged_538 =
 
 ```
 
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables). The dimension of the merged data set, `merged_538`, is `r dim(merged_538)`. The range of years in this merged data set is `r merged_538 %>% select(year) %>% range`. The names of key variables are `r merged_538 %>% names`
+The `pols_month` data set contains data on the party affiliation of the current president and number of republican and democratic governors, senators, and senators on specific dates, which were changed to indicate year and month. The dimension of the merged data set, `merged_538`, is `r dim(merged_538)`. The range of years in this merged data set is `r merged_538 %>% select(year) %>% range`. The names of key variables are month and year, out of the total variables in the data set, `r merged_538 %>% names`. 
 
 ## Problem 3 
 
