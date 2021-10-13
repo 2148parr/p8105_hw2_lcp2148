@@ -54,7 +54,8 @@ dfmnth = tibble(
   mnth = c(month.name[month]))
 
 precipfinal = left_join(precipboth, dfmnth, by = "month") %>% 
-  select(-c(month)) %>%  rename(month = mnth)
+  select(-c(month)) %>% 
+  rename(month = mnth)
 
 ``` 
 
@@ -112,15 +113,16 @@ snp = read_csv(file = "./hw2_data/snp.csv") %>%
 merged_538 =
   left_join(snp, pols_month, by = c("year", "mnth"))  %>% 
   left_join(., unempl, by = c("year", "mnth")) %>% 
-  rename(month = mnth)
+  rename(month = mnth) %>% drop_na() %>% 
+  select(-c(mon))
 
 ```
 
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables). The dimension of the merged data set, `merged_538`, is `r dim(merged_538)`. The range of years in this merged data set is `r merged_538 %>% select(year) %>% range`. The names of key variables are `r merged_538 %>% names`
 
 ## Problem 3 
 
-Next, I'm importing the baby names data and cleaning by correcting ethnicity names typos to match, making the case structure of the name variable consisten, and removing the duplicate rows. 
+Next, I'm importing the baby names data and cleaning by correcting ethnicity names typos to match, making the case structure of the name variable consistent, and removing the duplicate rows. 
 
 ```{r baby_names}
 
