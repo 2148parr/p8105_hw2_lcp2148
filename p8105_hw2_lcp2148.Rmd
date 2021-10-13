@@ -47,14 +47,14 @@ precip2019 = read_excel("./hw2_data/trash_wheel.xlsx", sheet = "2019 Precipitati
 precip2019 = mutate(precip2019, 
        year = 2019) %>% janitor::clean_names()
 
-precipboth = bind_rows(precip2018, precip2019) %>% drop_na()
+precipboth = bind_rows(precip2018, precip2019) %>% drop_na() 
 
 dfmnth = tibble(
   month = 1:12, 
   mnth = c(month.name[month]))
 
 precipfinal = left_join(precipboth, dfmnth, by = "month") %>% 
-  select(-c(month))
+  select(-c(month)) %>%  rename(month = mnth)
 
 ``` 
 
@@ -63,7 +63,6 @@ Key variables in Mr Trash Wheel include weight in tons, volume in cubic years, h
 `summary(precipboth)` For the precipitation data set, the variables are year, precipitation in inches, and months. Total precipitation in 2018 was `print median (pull(precip2018, x2))` 70.33 in. 
 
 ## Problem 2
-
 
 First I am importing pols-month.csv, unemployment.csv, and snp.csv. 
 tasks-- month and year will be keys to merge data sets
@@ -76,8 +75,6 @@ Third, tidy the unemployment data so that it can be merged with the previous dat
 Join the datasets by merging snp into pols, and merging unemployment into the result.
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
-##  separate(mon, into = c("year", "month", "day")) %>%
-##          mon, into = c("year", "month", "day"))
   
 
 ```{r fivtheight}
@@ -95,25 +92,30 @@ pols_month = read_csv(file = "./hw2_data/pols-month.csv") %>%
   select(-c(day, month))
 
   
-## unempl = read_csv(file = "./hw2_data/unemployment.csv") %>%
-##    janitor::clean_names(unempl)
-
-##snp = read_csv(file = "./hw2_data/snp.csv") %>%
-##  janitor::clean_names() 
-
-##date_fixed = as.numeric(date)
-
-##snp$date = unlist(snp$date)
-##snp[order(as.Date.numeric(date,format = "%m/%d/%Y")),,drop = FALSE]
-
-##snp = lubridate::mdy(date) %>%
-##  mutate( month2 = lubridate::month(date), 
-##                day2 = lubridate::day(date),
-##                year2 = lubridate::year(date)) %>% 
-##  left_join( dfmnth, by = "month")  %>% 
-##  select(-c(day, month))
-
+unempl = read_csv(file = "./hw2_data/unemployment.csv") %>%
+    janitor::clean_names() %>%
+  pivot_longer(
+    jan:dec,
+    names_to = "mnth",
+    values_to = "unemployment") %>%
+  mutate(mnth = recode(mnth,
+                       jan = "January", feb = "February", mar = "March", 
+                       apr = "April", may = "May", jun = "June", 
+                       july = "July", aug = "August", sep = "September", 
+                       oct = "October", nov = "November", dec = "December"))
   
+snp = read_csv(file = "./hw2_data/snp.csv") %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("month", "day", "year"), convert = TRUE) %>%
+  mutate(year = ifelse(year > 15, year + 1900, year + 2000)) %>% 
+  left_join(dfmnth, by = "month")  %>% 
+  select(-c(day, month))
+
+merged_538 =
+  left_join(snp, pols_month, by = c("year", "mnth"))  %>% 
+  left_join(., unempl, by = c("year", "mnth")) %>% 
+  rename(month = mnth)
+
 ```
 
 ## Problem 3 
@@ -146,7 +148,9 @@ Finally, for male, white non-hispanic children born in 2016, produce a scatter p
 
 
     ## %>%
- ## kable(format = "pipe", col.names = gsub("[_]", " ", names, caption = "Popularity of the name ## Olivia over time")
+
+##  knitr::kable(format = "pipe", col.names = gsub("[_]", " ", names, caption = "Popularity of  ##the name Olivia over time")
+ ##
 
 ```{r baby_figures}
 
@@ -158,6 +162,7 @@ baby_names %>%
     names_from = "year_of_birth",
     values_from = "rank"
   ) 
+
  
 baby_names %>%  
   select(childs_first_name, gender, ethnicity, year_of_birth, rank) %>%  
