@@ -10,7 +10,7 @@ output:
 
 First, I am loading relevant packages. 
 
-```{r setup}
+```{r setup, message = FALSE}
 
 library(tidyverse)
 library(readxl)
@@ -22,17 +22,16 @@ library(knitr)
 
 ## Problem 1
 
-I placed the Mr. Trash Wheel data set into a subdirectory named hw2_data
-within this one, p8105_hw2_lcp2148. I renamed it `trash_wheel.xlsx` for 
-ease of use. 
+I placed the Mr. Trash Wheel data set into a subdirectory named `hw2_data`
+within `p8105_hw2_lcp2148`. I renamed it `trash_wheel.xlsx`, because I thought this would be a SAS-like situation. 
 
 Next, I am reading in the Excel file and cleaning by: 
 
 - specifying the sheet in the Excel file 
 - omitting non-data entries (rows with notes / figures; columns containing
 notes) 
-- omitting rows that do not include dumpster-specific data
-- converting variable names to snake case
+- omitting rows that do not include dumpster-specific data using 
+- converting variable names to snake case with `janitor::clean_names`
 - rounding the number of sports balls to the nearest integer
 
 ```{r mr_trash}
@@ -70,24 +69,31 @@ precipfinal = left_join(precipboth, dfmnth, by = "month") %>%
 
 ``` 
 
-Key variables in Mr Trash Wheel include `r names(mr_trash)`.  The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 `r mr_trash %>% filter(year == 2019) %>% pull(sports_balls) %>% median()`.
+Key variables in Mr Trash Wheel include `r names(mr_trash)`. The number of observations in this data set is 456. The median number of sports balls in a dumpster in 2019 was `r mr_trash %>% filter(year == 2019) %>% pull(sports_balls) %>% median()`.
 
 For the precipitation data set, the variables are `r names(precipfinal)`. Total precipitation in 2018 was `r precipfinal %>% filter(year == 2018) %>% pull(precip_in) %>% sum()` in. 
 
 ## Problem 2
 
-First I am importing pols-month.csv, unemployment.csv, and snp.csv. 
-tasks-- month and year will be keys to merge data sets
-I cleaned the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+First I am importing `pols-month.csv`, `unemployment.csv`, and `snp.csv`, then I am cleaning them. 
 
-Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+For `pols_month`:
 
-Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+- I use `separate` to break up the variable `mon` into integer variables year, month, and day, then replace month number with month name
+- I create a president variable taking values gop and dem, remove the variables used to derive president variable, and remove the day variable
 
-Join the datasets by merging snp into pols, and merging unemployment into the result.
-  
+For `snp`:
 
-```{r fivtheight}
+- I arrange according to year and month and organize so that year and month are the leading columns
+
+For `unemployment`: 
+
+- I use `pivot_longer` to switch from “wide” to “long” format 
+- I change month and year variables to match with the other two data sets
+
+I finally use left_join to merge `snp` into `pols_month`, and then I merge `unemployment` into the two and remove unneeded variables.
+
+```{r fivtheight, message = FALSE}
 
 pols_month = read_csv(file = "./hw2_data/pols-month.csv") %>%
   janitor::clean_names() %>% 
@@ -101,7 +107,17 @@ pols_month = read_csv(file = "./hw2_data/pols-month.csv") %>%
   left_join( dfmnth, by = "month")  %>% 
   select(-c(day, month))
 
-  
+snp = read_csv(file = "./hw2_data/snp.csv") %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("month", "day", "year"), convert = TRUE) %>%
+  mutate(year = ifelse(year > 15, year + 1900, year + 2000)) %>% 
+  left_join(dfmnth, by = "month")  %>% 
+  select(-c(day, month)) 
+
+col_fix = c("year", "mnth", "close")
+
+snp = snp[, col_fix]
+
 unempl = read_csv(file = "./hw2_data/unemployment.csv") %>%
     janitor::clean_names() %>%
   pivot_longer(
@@ -113,23 +129,18 @@ unempl = read_csv(file = "./hw2_data/unemployment.csv") %>%
                        apr = "April", may = "May", jun = "June", 
                        july = "July", aug = "August", sep = "September", 
                        oct = "October", nov = "November", dec = "December"))
-  
-snp = read_csv(file = "./hw2_data/snp.csv") %>%
-  janitor::clean_names() %>%
-  separate(date, into = c("month", "day", "year"), convert = TRUE) %>%
-  mutate(year = ifelse(year > 15, year + 1900, year + 2000)) %>% 
-  left_join(dfmnth, by = "month")  %>% 
-  select(-c(day, month))
 
 merged_538 =
   left_join(snp, pols_month, by = c("year", "mnth"))  %>% 
   left_join(., unempl, by = c("year", "mnth")) %>% 
   rename(month = mnth) %>% drop_na() %>% 
-  select(-c(mon))
+  select(-c(mon, gov_gop, gov_dem, rep_gop, rep_dem, sen_gop, sen_dem, value))
 
 ```
 
-The `pols_month` data set contains data on the party affiliation of the current president and number of republican and democratic governors, senators, and senators on specific dates, which were changed to indicate year and month. The representative of the merged data set, `merged_538`, is `r dim(merged_538)`. The range of years in this merged data set is `r merged_538 %>% select(year) %>% range`. The names of key variables are month and year, out of the total variables in the data set, `r merged_538 %>% names`. 
+The `pols_month` data set contains data on the party affiliation of the current president and number of republican and democratic governors, senators, and representatives on specific dates, which were changed to indicate year and month. `snp` includes the closing values of the S&P stock index on specific dates and the associated date variable, and `unemployment` has twelve month variables indicating percent unemployment for that month of a specific year along with a respective year. 
+
+The dimension of the merged data set, `merged_538`, is `r dim(merged_538)`. The range of years in this merged data set is `r merged_538 %>% select(year) %>% range`. The names of key variables are month and year, out of the total variables in the data set, `r merged_538 %>% names`. 
 
 ## Problem 3 
 
@@ -150,21 +161,10 @@ baby_names$ethnicity[baby_names$ethnicity == "white non hisp"] = "white non hisp
   
 ```
 
-Next, I make a table using `pivot_wider` showing the rank in popularity of the 
-name “Olivia” as a female baby name over time including rows for ethnicities 
-and columns for year. 
+Next, I make a table using `pivot_wider` showing the rank in popularity of the name “Olivia” as a female baby name over time including rows for ethnicities and columns for year. 
 
-I then make a table using a similar process showing the most popular name among 
-male children over time.
 
-For male, white non-hispanic children born in 2016, I use `ggplot` to make a 
-scatter plot showing the number of children with a name against the rank in 
-popularity of that name.
-## %>%
-##knitr::kable(format = "pipe", col.names = gsub("[_]", " ", names, caption = "Popularity of  ##the name Olivia over time")
- 
-
-```{r baby_figures}
+```{r baby_figures_a}
 
 baby_names %>%  
   select(childs_first_name, gender, ethnicity, year_of_birth, rank) %>%  
@@ -172,8 +172,13 @@ baby_names %>%
   arrange(year_of_birth)  %>%
   pivot_wider(
     names_from = "year_of_birth",
-    values_from = "rank"
-  ) 
+    values_from = "rank") 
+
+```
+
+I then make a table using a similar process showing the most popular names among male children over time.
+
+```{r baby_figures_b}
 
 baby_names %>%  
   select(childs_first_name, gender, ethnicity, year_of_birth, rank) %>%  
@@ -181,8 +186,13 @@ baby_names %>%
   arrange(year_of_birth)  %>%
   pivot_wider(
     names_from = "year_of_birth",
-    values_from = "childs_first_name"
-  ) 
+    values_from = "childs_first_name") 
+
+```
+
+For white non-hispanic boys born in 2016, I use `ggplot` to make a scatter plot showing the number of children with a name against the rank in popularity of that name.
+
+```{r baby_figures_c}
 
 baby_names %>% filter(ethnicity == "white non hispanic", year_of_birth == 2016, 
                       gender == "male")  %>% ggplot(aes(rank, count)) + geom_point(size = 0.5) + ggtitle("Number and rank of names among white male children born in 2016")
